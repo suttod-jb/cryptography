@@ -31,7 +31,7 @@ from cryptography.hazmat.primitives.asymmetric import (
 from cryptography.hazmat.primitives.asymmetric.utils import (
     decode_dss_signature,
 )
-from cryptography.x509.extensions import ExtendedKeyUsage
+from cryptography.x509.extensions import ExtendedKeyUsage, NTDSCaSecurity
 from cryptography.x509.name import _ASN1Type
 from cryptography.x509.oid import (
     AuthorityInformationAccessOID,
@@ -5298,6 +5298,7 @@ class TestCertificateSigningRequestBuilder:
                     ExtendedKeyUsageOID.CODE_SIGNING,
                 ]
             ),
+            x509.NTDSCaSecurity("S-1-5-21-1468012755-800561317-457473099-500"),
         ],
     )
     def test_extensions(
@@ -6019,6 +6020,39 @@ class TestOtherCertificate:
 
         with pytest.raises(ValueError, match="InvalidSize"):
             cert.extensions.get_extension_for_class(ExtendedKeyUsage)
+
+    def test_ntds_ca_security(self, backend):
+        cert = _load_cert(
+            os.path.join("x509", "ntds_ca_security", "good.pem"),
+            x509.load_pem_x509_certificate,
+        )
+        ext = cert.extensions.get_extension_for_oid(
+            ExtensionOID.NTDS_CA_SECURITY
+        )
+        assert isinstance(ext.value, NTDSCaSecurity)
+        assert ext.value.sid == "S-1-5-21-1468012755-800561317-457473099-500"
+
+    @pytest.mark.parametrize(
+        ("filename", "expected_error"),
+        [
+            ("bad_encoding", "Value must be encoded as OCTET STRING"),
+            ("bad_format", None),
+            ("bad_oid", "Missing OtherName with OID NTDS_OBJECTSID"),
+        ],
+    )
+    def test_ntds_ca_security_parse_errors(
+        self, filename, expected_error, backend
+    ):
+        cert = _load_cert(
+            os.path.join("x509", "ntds_ca_security", f"{filename}.pem"),
+            x509.load_pem_x509_certificate,
+        )
+        with pytest.raises(ValueError) as exc_info:
+            _ = cert.extensions.get_extension_for_oid(
+                ExtensionOID.NTDS_CA_SECURITY
+            )
+        if expected_error:
+            assert expected_error in str(exc_info.value)
 
 
 class TestNameAttribute:

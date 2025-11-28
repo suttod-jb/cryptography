@@ -59,6 +59,7 @@ from cryptography.x509.extensions import (
     NameConstraints,
     NamingAuthority,
     NoticeReference,
+    NTDSCaSecurity,
     OCSPAcceptableResponses,
     OCSPNoCheck,
     OCSPNonce,
@@ -118,6 +119,7 @@ OID_ISSUER_ALTERNATIVE_NAME = ExtensionOID.ISSUER_ALTERNATIVE_NAME
 OID_KEY_USAGE = ExtensionOID.KEY_USAGE
 OID_PRIVATE_KEY_USAGE_PERIOD = ExtensionOID.PRIVATE_KEY_USAGE_PERIOD
 OID_NAME_CONSTRAINTS = ExtensionOID.NAME_CONSTRAINTS
+OID_NTDS_CA_SECURITY = ExtensionOID.NTDS_CA_SECURITY
 OID_OCSP_NO_CHECK = ExtensionOID.OCSP_NO_CHECK
 OID_POLICY_CONSTRAINTS = ExtensionOID.POLICY_CONSTRAINTS
 OID_POLICY_MAPPINGS = ExtensionOID.POLICY_MAPPINGS
@@ -220,6 +222,7 @@ __all__ = [
     "IssuingDistributionPoint",
     "KeyUsage",
     "MSCertificateTemplate",
+    "NTDSCaSecurity",
     "Name",
     "NameAttribute",
     "NameConstraints",

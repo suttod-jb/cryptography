@@ -627,7 +627,9 @@ pub(crate) fn encode_extension(
                 &asn1::BigUint::new(&bytes).unwrap(),
             )?))
         }
-        &oid::ISSUER_ALTERNATIVE_NAME_OID | &oid::SUBJECT_ALTERNATIVE_NAME_OID => {
+        &oid::ISSUER_ALTERNATIVE_NAME_OID
+        | &oid::SUBJECT_ALTERNATIVE_NAME_OID
+        | &oid::NTDS_CA_SECURITY_OID => {
             let ka_bytes = cryptography_keepalive::KeepAlive::new();
             let ka_str = cryptography_keepalive::KeepAlive::new();
             let gns = x509::common::encode_general_names(ext.py(), &ka_bytes, &ka_str, ext)?;

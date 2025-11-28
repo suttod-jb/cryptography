@@ -255,6 +255,8 @@ pub static USER_NOTICE: LazyPyImport = LazyPyImport::new("cryptography.x509", &[
 pub static NOTICE_REFERENCE: LazyPyImport =
     LazyPyImport::new("cryptography.x509", &["NoticeReference"]);
 pub static REGISTERED_ID: LazyPyImport = LazyPyImport::new("cryptography.x509", &["RegisteredID"]);
+pub static NTDS_CA_SECURITY: LazyPyImport =
+    LazyPyImport::new("cryptography.x509", &["NTDSCaSecurity"]);
 pub static DIRECTORY_NAME: LazyPyImport =
     LazyPyImport::new("cryptography.x509", &["DirectoryName"]);
 pub static UNIFORM_RESOURCE_IDENTIFIER: LazyPyImport =

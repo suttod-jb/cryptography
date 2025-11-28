@@ -8,7 +8,7 @@ use cryptography_x509::crl::{
     self, CertificateRevocationList as RawCertificateRevocationList,
     RevokedCertificate as RawRevokedCertificate,
 };
-use cryptography_x509::extensions::{Extension, IssuerAlternativeName};
+use cryptography_x509::extensions::{Extension, IssuerAlternativeName, NTDSCaSecurity};
 use cryptography_x509::{name, oid};
 use pyo3::types::{PyAnyMethods, PyListMethods, PySliceMethods};
 
@@ -377,6 +377,15 @@ impl CertificateRevocationList {
                 oid::FRESHEST_CRL_OID => {
                     let dp = certificate::parse_distribution_points(py, ext)?;
                     Ok(Some(types::FRESHEST_CRL.get(py)?.call1((dp,))?))
+                }
+                oid::NTDS_CA_SECURITY_OID => {
+                    let gn_seq = ext.value::<NTDSCaSecurity<'_>>()?;
+                    let gns = x509::parse_general_names(py, &gn_seq)?;
+                    Ok(Some(
+                        types::NTDS_CA_SECURITY
+                            .get(py)?
+                            .call_method1("from_general_names", (gns,))?,
+                    ))
                 }
                 _ => Ok(None),
             },

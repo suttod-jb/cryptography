@@ -41,6 +41,7 @@ class ExtensionOID:
     SIGNED_CERTIFICATE_TIMESTAMPS = ObjectIdentifier("1.3.6.1.4.1.11129.2.4.5")
     MS_CERTIFICATE_TEMPLATE = ObjectIdentifier("1.3.6.1.4.1.311.21.7")
     ADMISSIONS = ObjectIdentifier("1.3.36.8.3.3")
+    NTDS_CA_SECURITY = ObjectIdentifier("1.3.6.1.4.1.311.25.2")
 
 
 class OCSPExtensionOID:
@@ -228,6 +229,10 @@ class AttributeOID:
     UNSTRUCTURED_NAME = ObjectIdentifier("1.2.840.113549.1.9.2")
 
 
+class NTDSOID:
+    NTDS_OBJECT_SID = ObjectIdentifier("1.3.6.1.4.1.311.25.2.1")
+
+
 _OID_NAMES = {
     NameOID.COMMON_NAME: "commonName",
     NameOID.COUNTRY_NAME: "countryName",
@@ -327,6 +332,7 @@ _OID_NAMES = {
     ExtensionOID.PRECERT_POISON: "ctPoison",
     ExtensionOID.MS_CERTIFICATE_TEMPLATE: "msCertificateTemplate",
     ExtensionOID.ADMISSIONS: "Admissions",
+    ExtensionOID.NTDS_CA_SECURITY: "NTDSCaSecurity",
     CRLEntryExtensionOID.CRL_REASON: "cRLReason",
     CRLEntryExtensionOID.INVALIDITY_DATE: "invalidityDate",
     CRLEntryExtensionOID.CERTIFICATE_ISSUER: "certificateIssuer",
@@ -353,4 +359,5 @@ _OID_NAMES = {
     CertificatePoliciesOID.CPS_USER_NOTICE: "id-qt-unotice",
     OCSPExtensionOID.NONCE: "OCSPNonce",
     AttributeOID.CHALLENGE_PASSWORD: "challengePassword",
+    NTDSOID.NTDS_OBJECT_SID: "NTDSObjectSID",
 }

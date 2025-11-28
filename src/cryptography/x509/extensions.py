@@ -37,6 +37,7 @@ from cryptography.x509.general_name import (
 )
 from cryptography.x509.name import Name, RelativeDistinguishedName
 from cryptography.x509.oid import (
+    NTDSOID,
     CRLEntryExtensionOID,
     ExtensionOID,
     ObjectIdentifier,
@@ -2219,6 +2220,80 @@ class MSCertificateTemplate(ExtensionType):
 
     def public_bytes(self) -> bytes:
         return rust_x509.encode_extension_value(self)
+
+
+class NTDSCaSecurity(ExtensionType):
+    oid = ExtensionOID.NTDS_CA_SECURITY
+
+    def __init__(self, object_sid: str):
+        self._object_sid = object_sid
+
+    @classmethod
+    def from_general_names(cls, names: GeneralNames) -> NTDSCaSecurity:
+        """
+        Factory method to create an instance of extension
+        from value (GeneralNames)
+        """
+        for name in names:
+            if isinstance(name, OtherName):
+                if name.type_id == NTDSOID.NTDS_OBJECT_SID:
+                    return cls.from_octet_string(name.value)
+
+        raise ValueError("Missing OtherName with OID NTDS_OBJECTSID")
+
+    @classmethod
+    def from_octet_string(cls, os: bytes) -> NTDSCaSecurity:
+        """
+        Factory method to create an instance of extension
+        from SID encoded as OCTET STRING
+        """
+        if os[0] != 0x04:
+            raise ValueError("Value must be encoded as OCTET STRING")
+        if int(os[1]) >= 0x80:
+            raise NotImplementedError(
+                "Length, spanning multiple bytes are not yet supported"
+            )
+        if len(os) - 2 != int(os[1]):
+            raise ValueError("Invalid length in TLV structurer")
+        return cls(os[2:].decode("ascii"))
+
+    @property
+    def sid(self) -> str:
+        """The SID of the AD object as string"""
+        return self._object_sid
+
+    @property
+    def as_general_names(self) -> GeneralNames:
+        return GeneralNames(
+            [OtherName(NTDSOID.NTDS_OBJECT_SID, self.as_octet_string)]
+        )
+
+    @property
+    def as_octet_string(self) -> bytes:
+        """The SID of the AD object as OCTET STRING"""
+        as_bytes = self.sid.encode("ascii")
+        if len(as_bytes) >= 0x80:
+            raise NotImplementedError(
+                "Length, spanning multiple bytes are not yet supported"
+            )
+        return b"\x04" + len(as_bytes).to_bytes() + as_bytes
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, NTDSCaSecurity):
+            return NotImplemented
+
+        return self._object_sid == other._object_sid
+
+    def __hash__(self) -> int:
+        return hash(self._object_sid)
+
+    __len__, __iter__, __getitem__ = _make_sequence_methods("as_general_names")
+
+    def public_bytes(self) -> bytes:
+        return rust_x509.encode_extension_value(self)
+
+    def __repr__(self) -> str:
+        return f"<NTDSCaSecurity(SID={self.sid!r})>"
 
 
 class NamingAuthority:

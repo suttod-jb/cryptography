@@ -10,8 +10,8 @@ use cryptography_x509::common::{AlgorithmParameters, Asn1Read, Asn1ReadableOrWri
 use cryptography_x509::extensions::{
     Admission, Admissions, AuthorityKeyIdentifier, BasicConstraints, DisplayText,
     DistributionPoint, DistributionPointName, DuplicateExtensionsError, ExtendedKeyUsage,
-    Extension, IssuerAlternativeName, KeyUsage, MSCertificateTemplate, NameConstraints,
-    NamingAuthority, PolicyConstraints, PolicyInformation, PolicyQualifierInfo,
+    Extension, IssuerAlternativeName, KeyUsage, MSCertificateTemplate, NTDSCaSecurity,
+    NameConstraints, NamingAuthority, PolicyConstraints, PolicyInformation, PolicyQualifierInfo,
     PrivateKeyUsagePeriod, ProfessionInfo, Qualifier, RawExtensions, SequenceOfAccessDescriptions,
     SequenceOfSubtrees, SubjectAlternativeName, UserNotice,
 };
@@ -975,6 +975,15 @@ pub fn parse_cert_ext<'p>(
                 types::PRIVATE_KEY_USAGE_PERIOD
                     .get(py)?
                     .call1((not_before, not_after))?,
+            ))
+        }
+        oid::NTDS_CA_SECURITY_OID => {
+            let gn_seq = ext.value::<NTDSCaSecurity<'_>>()?;
+            let gns = x509::parse_general_names(py, &gn_seq)?;
+            Ok(Some(
+                types::NTDS_CA_SECURITY
+                    .get(py)?
+                    .call_method1("from_general_names", (gns,))?,
             ))
         }
         _ => Ok(None),

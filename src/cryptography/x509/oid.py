@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from cryptography.hazmat._oid import (
+    NTDSOID,
     AttributeOID,
     AuthorityInformationAccessOID,
     CertificatePoliciesOID,
@@ -21,6 +22,7 @@ from cryptography.hazmat._oid import (
 )
 
 __all__ = [
+    "NTDSOID",
     "AttributeOID",
     "AuthorityInformationAccessOID",
     "CRLEntryExtensionOID",
